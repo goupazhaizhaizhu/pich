@@ -16,5 +16,3 @@ time npm cache clear --force
 time npm install --force
 
 time npm run build
-
-time npm run start:prod
