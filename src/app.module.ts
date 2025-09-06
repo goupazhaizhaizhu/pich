@@ -5,6 +5,8 @@ import { RedisModule } from './redis/redis.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+console.log(process.env.NODE_ENV, 'process.env.NODE_ENV');
+
 @Module({
   imports: [
     ConfigModule.forRoot({
