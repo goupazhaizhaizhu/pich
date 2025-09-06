@@ -16,7 +16,8 @@ type RedisClient = ReturnType<typeof createClient>; // 定义一个类型别名�
       ): Promise<RedisClient> => {
         const host = configService.get<string>('REDIS_HOST');
         const port = parseInt(configService.get<string>('REDIS_PORT'), 10); // 获取并转换为数字
-
+        const production = configService.get<string>('NODE_ENV');
+        console.log('redis客户端连接参数', host, port, production)
         const client = createClient({
           url: `redis://${host}:${port}`,
         });

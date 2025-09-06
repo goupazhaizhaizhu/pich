@@ -4,7 +4,7 @@
   "port": 3306,
   "username": "root",
   "password": "Goupazhai<123",
-  "database": "feature",
+  "database": "pich",
   "synchronize": false,
   "logging": true,
   "entities": ["dist/**/*.entity.js"],
