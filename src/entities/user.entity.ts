@@ -13,16 +13,16 @@ export class User {
   @PrimaryGeneratedColumn() // 对应 SQL 中的 `id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY
   id: number;
 
-  @Column({ length: 50, unique: true }) // 对应 `username` VARCHAR(50) NOT NULL, UNIQUE KEY
+  @Column({ length: 50, nullable: true }) // 对应 `username` VARCHAR(50) NOT NULL, UNIQUE KEY
   username: string;
 
-  @Column({ length: 100, unique: true }) // 对应 `email` VARCHAR(100) NOT NULL, UNIQUE KEY
+  @Column({ length: 100, nullable: true }) // 对应 `email` VARCHAR(100) NOT NULL, UNIQUE KEY
   email: string;
 
-  @Column({ length: 100, unique: true }) // 对应 `phone` VARCHAR(100) NOT NULL, UNIQUE KEY
+  @Column({ length: 100, nullable: true }) // 对应 `phone` VARCHAR(100) NOT NULL, UNIQUE KEY
   phone: string;
 
-  @Column({ length: 255 }) // 对应 `password` VARCHAR(255) NOT NULL
+  @Column({ length: 255, unique: true }) // 对应 `password` VARCHAR(255) NOT NULL
   openId: string;
 
   @CreateDateColumn({ type: 'timestamp' }) // 对应 `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP

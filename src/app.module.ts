@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { RedisModule } from './redis/redis.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './feature/auth/auth.module';
 
 console.log(process.env.NODE_ENV, 'process.env.NODE_ENV');
 
@@ -28,7 +29,8 @@ console.log(process.env.NODE_ENV, 'process.env.NODE_ENV');
       }),
       inject: [ConfigService],
     }),
-    RedisModule
+    RedisModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [],

@@ -11,14 +11,14 @@ declare module 'express-session' {
   interface SessionData {
     // 在这里添加你的自定义属性及其类型
     // 使用问号 (?) 表示属性是可选的，因为在 Session 刚创建时可能没有这些属性
-    views?: number;
-    userId?: string;
-    username?: string;
-    lastVisit?: string;
+    // views?: number;
+    // userId?: string;
+    // username?: string;
+    // lastVisit?: string;
     // ... 你在 req.session 上设置的任何其他自定义属性
     // 比如，如果你用了 csurf，并且需要访问 csurf 的 token，虽然 csurf 会自动管理，
     // 但如果需要手动类型提示，可以加在这里（尽管 csurf 会把其 token 放在 req.csrfToken() 方法里，
     // 而不是直接在 req.session 里暴露给开发者访问）
-    csrfToken?: string; // 仅作示例，csurf token通常通过req.csrfToken()访问
+    // csrfToken?: string; // 仅作示例，csurf token通常通过req.csrfToken()访问
   }
 }
