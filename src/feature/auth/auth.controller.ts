@@ -2,7 +2,7 @@ import { Controller, Res, Req, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 
-@Controller()
+@Controller('/auth')
 export class AuthController {
 
   constructor(
@@ -12,7 +12,7 @@ export class AuthController {
    * 健康检查端点
    * @returns 简单的健康状态
    */
-  @Post('login')
+  @Post('/login')
   async login(@Req() req: Request, @Res() res: Response) {
       const params = {
           openId: req?.body?.openId,

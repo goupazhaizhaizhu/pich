@@ -22,8 +22,7 @@ export class AuthService {
     const sessionDate = await this.setSession(params);
     // 检查mysql中是否有该用户，如果没有，则新增用户
     const userInfo = await this.checkInUser({
-      ...params,
-      phone: sessionDate.phone,
+      ...params
     });
     // 生成jwt
     const jwtJson = {
@@ -43,11 +42,10 @@ export class AuthService {
 
   async setSession(params: LoginParams) {
     const { openId, code } = params;
-    // TODO: 通过code获取session、phone
+    // TODO: 通过code获取session、phone等信息
     const mockDate = {
       sessionKey: '',
       vi: '',
-      phone: '',
     };
     console.log(this.configService.get('SESSION_MAX_AGE'), 'SESSION_MAX_AGE');
     await this.redisService.setCache(
@@ -58,7 +56,7 @@ export class AuthService {
     return mockDate;
   }
 
-  async checkInUser(params: LoginParams & { phone : string}) {
+  async checkInUser(params: LoginParams) {
     const { openId, originName } = params;
     const user = await this.userRepository.findOne({ where: { openId } });
     if (!user) {
