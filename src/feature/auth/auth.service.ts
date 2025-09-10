@@ -104,7 +104,7 @@ export class AuthService {
     const existRefreshTokenStr =
       ((await this.redisService.getCache(key)) as string) || '[]';
     const existRefreshTokenList = JSON.parse(existRefreshTokenStr) || [];
-    if (existRefreshTokenList.length > 2) {
+    if (existRefreshTokenList.length >= 3) {
       existRefreshTokenList.shift();
     }
     existRefreshTokenList.push(tokenItem);
