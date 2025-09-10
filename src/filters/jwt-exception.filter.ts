@@ -18,7 +18,7 @@ export class JwtExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>(); // 也可以获取请求对象
 
     let status = HttpStatus.UNAUTHORIZED; // 默认是 401
-    let message = '身份验证失败，请重新登录'; // 默认消息
+    let message = '身份验证失败，请刷新令牌'; // 默认消息
     let code = 'AUTH_FAILED'; // 自定义错误码
 
     if (exception instanceof TokenExpiredError) {
