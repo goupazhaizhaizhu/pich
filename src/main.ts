@@ -4,6 +4,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { RedisClientType } from 'redis'; 
 import { ConfigService } from '@nestjs/config';
 import { REDIS_CLIENT } from './redis/redis.service';
+import { JwtExceptionFilter } from './filters/jwt-exception.filter';
+import { RefreshExceptionFilter } from './filters/refresh-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +24,8 @@ async function bootstrap() {
 
   // 应用全局管道
   app.useGlobalPipes(new ValidationPipe());
+
+  app.useGlobalFilters(new JwtExceptionFilter(), new RefreshExceptionFilter());
 
   // 启动应用
   await app.listen(configService.get<string>('PORT'));

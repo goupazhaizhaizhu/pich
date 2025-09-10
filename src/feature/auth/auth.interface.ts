@@ -6,10 +6,26 @@ export interface LoginParams {
 
 export interface LoginResponse {
   accessToken: string;
+  refreshToken: string;
   userInfo: {
     openId: string;
     username: string;
   };
+}
+
+export interface RefreshParams {
+  openId: string;
+  refreshToken: string;
+}
+
+export interface RefreshResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface RefreshTokenItem {
+  refreshToken: string;
+  expiredIn: number;
 }
 
 export interface JwtInfo {

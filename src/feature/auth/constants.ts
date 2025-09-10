@@ -1,0 +1,3 @@
+export const SESSION_KEY_PREFIX = 'SESSION_KEY_';
+
+export const REFRESH_TOKEN_PREFIX = 'REFRESH_TOKEN_';
