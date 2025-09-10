@@ -6,7 +6,7 @@ import { User } from 'src/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { LoginParams, LoginResponse, RefreshParams, RefreshResponse, RefreshTokenItem } from './auth.interface';
 import { JwtService } from '@nestjs/jwt';
-import { REFRESH_TOKEN_PREFIX, SESSION_KEY_PREFIX } from './constants';
+import { OPEN_ID_REFRESH_TOKEN_PREFIX, REFRESH_TOKEN_PREFIX, SESSION_KEY_PREFIX } from './constants';
 import { v4 } from 'uuid';
 import RefreshTokenException from 'src/exception/RefreshTokenException';
 
@@ -21,13 +21,11 @@ export class AuthService {
   ) {}
 
   async login(params: LoginParams): Promise<LoginResponse> {
-    const { openId } = params;
+    const { code, originName } = params;
     // 更新session
-    await this.setSession(params);
+    const openId = await this.setSession(code);
     // 检查mysql中是否有该用户，如果没有，则新增用户
-    const userInfo = await this.checkInUser({
-      ...params,
-    });
+    const userInfo = await this.checkInUser(openId, originName);
     // 更新refreshToken
     const refreshToken = await this.getRefreshToken(openId);
 
@@ -38,7 +36,6 @@ export class AuthService {
       accessToken,
       refreshToken,
       userInfo: {
-        openId: userInfo.openId,
         username: userInfo.username,
       },
     };
@@ -54,22 +51,22 @@ export class AuthService {
     return await this.jwtService.sign(jwtJson);
   }
 
-  private async setSession(params: LoginParams) {
-    const { openId, code } = params;
+  private async setSession(code: string) {
     // TODO: 通过code获取session、phone等信息
     const mockDate = {
       sessionKey: '',
       vi: '',
+      openId: '123454667',
     };
     await this.redisService.setCache(
-      `${SESSION_KEY_PREFIX}${openId}`,
+      `${SESSION_KEY_PREFIX}${mockDate.openId}`,
       JSON.stringify(mockDate),
       this.configService.get('SESSION_MAX_AGE'),
     );
+    return mockDate.openId;
   }
 
-  private async checkInUser(params: LoginParams) {
-    const { openId, originName } = params;
+  private async checkInUser(openId: string, originName: string) {
     const user = await this.userRepository.findOne({ where: { openId } });
     if (!user) {
       const newUser = this.userRepository.create({
@@ -85,56 +82,56 @@ export class AuthService {
 
   private async getRefreshToken(openId: string) {
     const refreshToken = v4();
-    const tokenItem = this.createRefreshToken(refreshToken);
-    this.replaceToken(openId, tokenItem);
+    this.replaceToken(openId, refreshToken);
     return refreshToken;
   }
 
-  private createRefreshToken(refreshToken: string): RefreshTokenItem {
-    return {
-      refreshToken: refreshToken,
-      expiredIn: new Date(
-        Date.now() + this.configService.get('SESSION_MAX_AGE') * 1000,
-      ).valueOf(),
-    };
-  }
-
-  private async replaceToken(openId: string, tokenItem: RefreshTokenItem) {
-    const key = `${REFRESH_TOKEN_PREFIX}${openId}`;
+  private async replaceToken(openId: string, refreshToken: string) {
+    const key = `${OPEN_ID_REFRESH_TOKEN_PREFIX}${openId}`;
     const existRefreshTokenStr =
       ((await this.redisService.getCache(key)) as string) || '[]';
-    const existRefreshTokenList = JSON.parse(existRefreshTokenStr) || [];
-    if (existRefreshTokenList.length >= 3) {
-      existRefreshTokenList.shift();
+    const existRefreshTokenList = JSON.parse(existRefreshTokenStr) as string[] || [];
+    const length = existRefreshTokenList.length;
+    if (length >= 5) {
+      existRefreshTokenList.splice(0, length - 4);
     }
-    existRefreshTokenList.push(tokenItem);
+    existRefreshTokenList.push(refreshToken);
     await this.redisService.setCache(
       key,
       JSON.stringify(existRefreshTokenList),
       this.configService.get('SESSION_MAX_AGE'),
     );
+    await this.redisService.setCache(
+      `${REFRESH_TOKEN_PREFIX}${refreshToken}`,
+      openId,
+      this.configService.get('SESSION_MAX_AGE')
+    );
   }
 
-  private async checkRefresh(openId: string, refreshToken: string) {
-    const key = `${REFRESH_TOKEN_PREFIX}${openId}`;
+  private async checkRefresh(refreshToken: string) {
+    const openId = await this.redisService.getCache(
+      `${REFRESH_TOKEN_PREFIX}${refreshToken}`,
+    ) as string;
+    const key = `${OPEN_ID_REFRESH_TOKEN_PREFIX}${openId}`;
     const existRefreshTokenStr =
       ((await this.redisService.getCache(key)) as string) || '[]';
-    const existRefreshTokenList = JSON.parse(existRefreshTokenStr) || [];
-    const curItem = existRefreshTokenList.find(
-      (item) => item.refreshToken === refreshToken,
-    );
+    const existRefreshTokenList = JSON.parse(existRefreshTokenStr) as string[] || [];
+    
     // 校验refreshToken
-    if (!curItem || curItem.expiredIn < Date.now) {
+    if (
+      !existRefreshTokenList.includes(refreshToken) || !openId
+    ) {
       // 校验不通过，则删除当前缓存，返回登录态
       await this.redisService.deleteCache(key);
       throw new RefreshTokenException('refreshToken无效或过期，请重新登录');
     }
+    return openId;
   }
 
   async refresh(params: RefreshParams): Promise<RefreshResponse> {
-    const { openId, refreshToken } = params;
+    const {  refreshToken } = params;
     // 校验refreshToken
-    await this.checkRefresh(openId, refreshToken);
+    const openId = await this.checkRefresh(refreshToken);
 
     const accessToken = await this.createAccessToken(openId);
     // 生成新的refreshToken

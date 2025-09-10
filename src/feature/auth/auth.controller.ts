@@ -20,7 +20,6 @@ export class AuthController {
   @Post('/refresh')
   async refresh(@Req() req: Request, @Res() res: Response) {
     const params = {
-      openId: req?.body?.openId,
       refreshToken: req?.body?.refreshToken,
     };
     const result = await this.authService.refresh(params);
