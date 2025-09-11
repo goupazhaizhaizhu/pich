@@ -3,7 +3,7 @@ import { Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('/user')
+@Controller('/pich/user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
