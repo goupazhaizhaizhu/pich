@@ -4,7 +4,7 @@
 
 ```bash
 # 构建
-sh build.sh
+npm run build
 # 启动
 pm2 start ecosystem.config.js --env production
 # 停止

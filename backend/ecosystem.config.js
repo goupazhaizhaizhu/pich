@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'pich', // 给你的应用起个名字
       script: './dist/main.js',
-      instances: 1, // 实例数量（集群模式时可用'max'）
+      instances: 'max', // 实例数量（集群模式时可用'max'）
       autorestart: true, // 应用崩溃时自动重启
       watch: false, // 禁用文件监听（生产环境建议false）
       max_memory_restart: '1G', // 内存超过1G自动重启
