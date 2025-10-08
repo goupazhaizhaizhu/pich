@@ -69,6 +69,7 @@ export class AuthService {
   private async checkInUser(openId: string, originName: string) {
     const user = await this.userRepository.findOne({ where: { openId } });
     if (!user) {
+      console.log('没有该用户，新增用户', openId);
       const newUser = this.userRepository.create({
         username: originName,
         openId,
@@ -76,6 +77,7 @@ export class AuthService {
       const savedUser = await this.userRepository.save(newUser);
       return savedUser;
     } else {
+      console.log('找到该用户了，直接返回用户', openId);
       return user;
     }
   }

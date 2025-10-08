@@ -10,22 +10,16 @@ module.exports = {
       env: {
         REDIS_PORT: 6379,
         PORT: 3000,
-        NODE_ENV: 'development',
-        MYSQL_SYNCHRONIZE: 'true',
-        MYSQL_PORT: 3306,
-        MYSQL_USERNAME: 'root',
-        MYSQL_PASSWORD: 'Goupazhai<123',
-        MYSQL_DATABASE: 'pich',
-      },
-      env_production: {
-        REDIS_PORT: 6379,
-        PORT: 3000,
         NODE_ENV: 'production',
         MYSQL_SYNCHRONIZE: 'true',
         MYSQL_PORT: 3306,
         MYSQL_USERNAME: 'root',
         MYSQL_PASSWORD: 'Goupazhai<123',
         MYSQL_DATABASE: 'pich',
+        SESSION_MAX_AGE: 86400,
+        JWT_SECRET: 'fehqu4ty489qfhhfgreug-rq43ht4',
+        JWT_EXPIRES_IN: 300,
+        COR_ORIGIN: 'http://localhost:5173',
       },
       output: './logs/out.log', // 标准输出日志路径
       error: './logs/error.log', // 错误日志路径

@@ -26,8 +26,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Goupazhai<123
       MYSQL_DATABASE: pich
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Goupazhai<123
+      # MYSQL_USER: root
+      # MYSQL_PASSWORD: Goupazhai<123
     volumes:
       - mysql-data:/var/lib/mysql # 数据持久化
       - ./mysql/init:/docker-entrypoint-initdb.d # 挂载初始化SQL脚本（可选）
@@ -56,9 +56,9 @@ services:
     ports:
       - "80:80"   # HTTP
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d # 推荐：将每个server配置拆分成单独文件
-      - ./nginx/logs:/var/log/nginx
+      # - ./nginx/logs:/var/log/nginx
     depends_on:
       - nest-app
     networks:
