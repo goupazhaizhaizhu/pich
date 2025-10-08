@@ -14,7 +14,7 @@ COPY pnpm-lock.yaml* ./
 
 # 使用 npm ci 而不是 npm install
 # ci 严格根据 lockfile 安装，能保证依赖一致性和更快的安装速度
-RUN npm ci --only=production --ignore-scripts
+RUN npm ci --only=production --ignore-scripts --force
 
 # 2. 复制源码并进行构建
 COPY . .

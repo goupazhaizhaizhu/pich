@@ -8,24 +8,20 @@ module.exports = {
       watch: false, // 禁用文件监听（生产环境建议false）
       max_memory_restart: '1G', // 内存超过1G自动重启
       env: {
-        REDIS_HOST: 'localhost',
         REDIS_PORT: 6379,
         PORT: 3000,
         NODE_ENV: 'development',
         MYSQL_SYNCHRONIZE: 'true',
-        MYSQL_HOST: 'localhost',
         MYSQL_PORT: 3306,
         MYSQL_USERNAME: 'root',
         MYSQL_PASSWORD: 'Goupazhai<123',
         MYSQL_DATABASE: 'pich',
       },
       env_production: {
-        REDIS_HOST: 'localhost',
         REDIS_PORT: 6379,
         PORT: 3000,
         NODE_ENV: 'production',
         MYSQL_SYNCHRONIZE: 'true',
-        MYSQL_HOST: 'localhost',
         MYSQL_PORT: 3306,
         MYSQL_USERNAME: 'root',
         MYSQL_PASSWORD: 'Goupazhai<123',

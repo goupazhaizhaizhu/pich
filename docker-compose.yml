@@ -1,0 +1,75 @@
+services:
+  # NestJS 应用服务
+  nest-app:
+    build: ./backend # 根据 Dockerfile 构建镜像
+    container_name: nest-app-container
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis-server
+      - MYSQL_HOST=mysql-server
+    depends_on:
+      - redis-server
+      - mysql-server
+    networks:
+      - app-network
+    # 在开发时，可以将本地目录挂载到容器，方便代码修改；生产环境通常不需要。
+    # volumes:
+    #   - ./nest-app:/app
+    #   - /app/node_modules
+
+  # MySQL 数据库服务
+  mysql-server:
+    image: mysql:8.0
+    container_name: mysql-container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: Goupazhai<123
+      MYSQL_DATABASE: pich
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Goupazhai<123
+    volumes:
+      - mysql-data:/var/lib/mysql # 数据持久化
+      - ./mysql/init:/docker-entrypoint-initdb.d # 挂载初始化SQL脚本（可选）
+    networks:
+      - app-network
+    # 自定义配置文件（可选）
+    # command: --default-authentication-plugin=mysql_native_password
+
+  # Redis 缓存服务
+  redis-server:
+    image: redis:7-alpine
+    container_name: redis-container
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+      # - ./redis/redis.conf:/usr/local/etc/redis/redis.conf # 挂载自定义配置（可选）
+    # command: redis-server /usr/local/etc/redis/redis.conf --requirepass your_redis_password # 使用配置文件和密码
+    networks:
+      - app-network
+
+  # Nginx 反向代理服务
+  nginx-server:
+    image: nginx:alpine
+    container_name: nginx-container
+    restart: unless-stopped
+    ports:
+      - "80:80"   # HTTP
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d # 推荐：将每个server配置拆分成单独文件
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - nest-app
+    networks:
+      - app-network
+
+# 定义网络，允许容器间通过服务名通信
+networks:
+  app-network:
+    driver: bridge
+
+# 定义数据卷，实现数据持久化
+volumes:
+  mysql-data:
+  redis-data:
