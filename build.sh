@@ -6,13 +6,16 @@ set -ex
 
 startTime=`date +%s`
 
+time cd backend
+
 time git pull
 
 time rm -rf node_modules/
 
 time npm cache clear --force
 
-
 time npm install --force
 
-time npm run build
+time cd ../
+
+time docker-compose up -d --build

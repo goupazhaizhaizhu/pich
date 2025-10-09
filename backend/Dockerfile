@@ -1,6 +1,8 @@
 # 阶段一：依赖安装与构建
 FROM node:20-alpine AS builder
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 WORKDIR /app
 
 # 1. 单独复制 package.json 文件进行依赖安装
