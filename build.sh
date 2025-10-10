@@ -10,12 +10,12 @@ time cd backend
 
 time git pull
 
-time rm -rf node_modules/
+# time rm -rf node_modules/
 
-time npm cache clear --force
+# time npm cache clear --force
 
-time npm install --force
+# time npm install --force
 
-time cd ../
+# time cd ../
 
 time docker-compose up -d --build
