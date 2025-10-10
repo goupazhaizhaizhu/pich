@@ -26,6 +26,8 @@ RUN npm run build
 # 阶段二：生产运行环境
 FROM node:20-alpine AS production
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 # 设置容器内的时区（非常重要，否则日志和时间可能不对）
 RUN apk add --no-cache tzdata && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
