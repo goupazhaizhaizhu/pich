@@ -23,3 +23,9 @@ docker-compose logs [服务名]
 # 停止容器
 docker stop [容器名]
 ```
+
+## sh启动
+
+```bash
+sh build.sh
+```

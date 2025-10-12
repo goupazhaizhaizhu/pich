@@ -16,6 +16,6 @@ time git pull
 
 # time npm install --force
 
-# time cd ../
+time cd ../
 
 time docker-compose up -d --build
