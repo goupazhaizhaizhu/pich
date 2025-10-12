@@ -55,6 +55,7 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"   # HTTP
+      - "443:443" # HTTPs
     volumes:
       # - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d # 推荐：将每个server配置拆分成单独文件
