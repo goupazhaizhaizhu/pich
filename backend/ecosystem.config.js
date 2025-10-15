@@ -20,6 +20,8 @@ module.exports = {
         JWT_SECRET: 'fehqu4ty489qfhhfgreug-rq43ht4',
         JWT_EXPIRES_IN: 300,
         COR_ORIGIN: 'http://localhost:5173',
+        APP_ID: 'wx0fced535abf31a8a',
+        APP_SECRET: 'd4766548b53ac4bad80bc350f0187994',
       },
       output: './logs/out.log', // 标准输出日志路径
       error: './logs/error.log', // 错误日志路径

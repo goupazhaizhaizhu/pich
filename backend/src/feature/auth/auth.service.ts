@@ -53,15 +53,13 @@ export class AuthService {
   }
 
   private async setSession(code: string) {
-    // TODO: 通过code获取openID、session、phone等信息
-    const response = await axios.get(
-      `https://api.weixin.qq.com/sns/jscode2session?appid=wx0fced535abf31a8a&secret=d4766548b53ac4bad80bc350f0187994&js_code=${code}&grant_type=authorization_code`,
+    const { data } = await axios.get(
+      `https://api.weixin.qq.com/sns/jscode2session?appid=${this.configService.get('APP_ID')}&secret=${this.configService.get('APP_SECRET')}&js_code=${code}&grant_type=authorization_code`,
     );
-    console.log(response, '微信登录')
+    console.log(data, '微信登录');
     const mockDate = {
-      sessionKey: '',
-      vi: '',
-      openId: '123454667',
+      sessionKey: data.session_key,
+      openId: data.openid,
     };
     await this.redisService.setCache(
       `${SESSION_KEY_PREFIX}${mockDate.openId}`,
