@@ -9,7 +9,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/getById')
-  async login(@Req() req: Request & {user: any}, @Res() res: Response) {
+  async login(@Req() req: Request , @Res() res: Response) {
     const params = {
       openId: req?.user?.openId,
     };
