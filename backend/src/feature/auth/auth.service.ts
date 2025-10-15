@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SMOOTH_REFRESH_TOKEN_PREFIX, REFRESH_TOKEN_PREFIX, SESSION_KEY_PREFIX } from './constants';
 import { v4 } from 'uuid';
 import RefreshTokenException from 'src/exception/RefreshTokenException';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -53,6 +54,10 @@ export class AuthService {
 
   private async setSession(code: string) {
     // TODO: 通过code获取openID、session、phone等信息
+    const response = await axios.get(
+      `https://api.weixin.qq.com/sns/jscode2session?appid=wx0fced535abf31a8a&secret=liuzhu.yc123&js_code=${code}&grant_type=authorization_code`,
+    );
+    console.log(response, '微信登录')
     const mockDate = {
       sessionKey: '',
       vi: '',
