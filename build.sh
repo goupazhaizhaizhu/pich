@@ -14,7 +14,7 @@ time git pull
 
 # time npm cache clear --force
 
-# time npm install --force
+time npm install --force
 
 time cd ../
 
