@@ -9,10 +9,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/getById')
-  async login(@Req() req: Request, @Res() res: Response) {
-    console.log(req?.user, 'req?.user');
+  async login(@Req() req: Request & {user: any}, @Res() res: Response) {
     const params = {
-      openId: req?.body?.openId,
+      openId: req?.user?.openId,
     };
     const userInfo = await this.userService.getUserInfo(params);
     return res.status(200).json(userInfo);
