@@ -1,5 +1,4 @@
 export interface LoginParams {
-  originName: string;
   code: string;
 }
 

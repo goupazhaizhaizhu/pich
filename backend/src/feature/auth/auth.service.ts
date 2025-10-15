@@ -6,7 +6,7 @@ import { User } from 'src/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { LoginParams, LoginResponse, RefreshParams, RefreshResponse, RefreshTokenItem } from './auth.interface';
 import { JwtService } from '@nestjs/jwt';
-import { OPEN_ID_REFRESH_TOKEN_PREFIX, REFRESH_TOKEN_PREFIX, SESSION_KEY_PREFIX } from './constants';
+import { SMOOTH_REFRESH_TOKEN_PREFIX, REFRESH_TOKEN_PREFIX, SESSION_KEY_PREFIX } from './constants';
 import { v4 } from 'uuid';
 import RefreshTokenException from 'src/exception/RefreshTokenException';
 
@@ -21,11 +21,11 @@ export class AuthService {
   ) {}
 
   async login(params: LoginParams): Promise<LoginResponse> {
-    const { code, originName } = params;
-    // 更新session
+    const { code } = params;
+    // 获取openId，sessionKey，vi等信息,顺便在redis中存一份备份数据
     const openId = await this.setSession(code);
-    // 检查mysql中是否有该用户，如果没有，则新增用户
-    const userInfo = await this.checkInUser(openId, originName);
+    // 通过openID检查mysql中是否有该用户，如果没有，则新增用户
+    const userInfo = await this.checkInUser(openId);
     // 更新refreshToken
     const refreshToken = await this.getRefreshToken(openId);
 
@@ -52,7 +52,7 @@ export class AuthService {
   }
 
   private async setSession(code: string) {
-    // TODO: 通过code获取session、phone等信息
+    // TODO: 通过code获取openID、session、phone等信息
     const mockDate = {
       sessionKey: '',
       vi: '',
@@ -66,12 +66,11 @@ export class AuthService {
     return mockDate.openId;
   }
 
-  private async checkInUser(openId: string, originName: string) {
+  private async checkInUser(openId: string) {
     const user = await this.userRepository.findOne({ where: { openId } });
     if (!user) {
       console.log('没有该用户，新增用户', openId);
       const newUser = this.userRepository.create({
-        username: originName,
         openId,
       });
       const savedUser = await this.userRepository.save(newUser);
@@ -89,7 +88,7 @@ export class AuthService {
   }
 
   private async replaceToken(openId: string, refreshToken: string) {
-    const key = `${OPEN_ID_REFRESH_TOKEN_PREFIX}${openId}`;
+    const key = `${SMOOTH_REFRESH_TOKEN_PREFIX}${openId}`;
     const existRefreshTokenStr =
       ((await this.redisService.getCache(key)) as string) || '[]';
     const existRefreshTokenList = JSON.parse(existRefreshTokenStr) as string[] || [];
@@ -111,20 +110,24 @@ export class AuthService {
   }
 
   private async checkRefresh(refreshToken: string) {
-    const openId = await this.redisService.getCache(
-      `${REFRESH_TOKEN_PREFIX}${refreshToken}`,
-    ) as string;
-    const key = `${OPEN_ID_REFRESH_TOKEN_PREFIX}${openId}`;
+    const refreshKey = `${REFRESH_TOKEN_PREFIX}${refreshToken}`;
+    const openId = (await this.redisService.getCache(refreshKey)) as string;
+    if (!openId) {
+      await this.redisService.deleteCache(refreshKey);
+      throw new RefreshTokenException('refreshToken无效或过期，请重新登录');
+    }
+    const smoothKey = `${SMOOTH_REFRESH_TOKEN_PREFIX}${openId}`;
     const existRefreshTokenStr =
-      ((await this.redisService.getCache(key)) as string) || '[]';
+      ((await this.redisService.getCache(smoothKey)) as string) || '[]';
     const existRefreshTokenList = JSON.parse(existRefreshTokenStr) as string[] || [];
     
     // 校验refreshToken
     if (
-      !existRefreshTokenList.includes(refreshToken) || !openId
+      existRefreshTokenList.length === 0 || !existRefreshTokenList.includes(refreshToken)
     ) {
       // 校验不通过，则删除当前缓存，返回登录态
-      await this.redisService.deleteCache(key);
+      await this.redisService.deleteCache(smoothKey);
+      await this.redisService.deleteCache(refreshKey);
       throw new RefreshTokenException('refreshToken无效或过期，请重新登录');
     }
     return openId;

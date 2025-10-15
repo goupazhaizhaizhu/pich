@@ -9,7 +9,6 @@ export class AuthController {
   @Post('/login')
   async login(@Req() req: Request, @Res() res: Response) {
     const params = {
-      openId: req?.body?.openId,
       originName: req?.body?.originName,
       code: req?.body?.code,
     };
