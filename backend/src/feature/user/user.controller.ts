@@ -12,7 +12,7 @@ export class UserController {
   async login(@Req() req: Request, @Res() res: Response) {
     console.log(req?.user, 'req?.user');
     const params = {
-      openId: req?.user?.openId,
+      openId: req?.body?.openId,
     };
     const userInfo = await this.userService.getUserInfo(params);
     return res.status(200).json(userInfo);
